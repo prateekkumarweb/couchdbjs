@@ -3,49 +3,96 @@ const http = require('http');
 const fs = require('fs');
 const request = require('request');
 const url = require('url');
-
-const protocol = "http";
+const colors = require('colors');
 
 class DBHandler {
-    constructor(options, db) {
+    constructor(db, options) {
         this.db = db;
-        this.config = options;
-        http.request({
-            hostname: options.hostname,
-            port: options.port,
-            method: 'GET',
-            path: '/'+encodeURIComponent(db)
-        }, (res) => {
-            var data = '';
-            res.on('data', (chunk) => {data+=chunk});
-            res.on('end', () => {
-                data = JSON.parse(data);
-                if (data.error) {
-                    DBHandler.createDB(this.config, db, (error) => {
-                        if (error) throw new Error("Database Creation error");
-                    });
-                }
-            });
-        }).end();
+        this.config = {
+            protocol: 'http:',
+            hostname: 'localhost',
+            port: 5984
+        };
+        for (var attr in options) {
+            this.config[attr] = options[attr];
+        }
     }
 
-    static getNewId(options, callback) {
-        if (!callback) callback = console.log;
-        http.request({
-            hostname: options.hostname,
-            port: options.port,
-            method: 'GET',
-            path: '/_uuids'
-        }, (res) => {
-            let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
-                data = JSON.parse(data);
-                if(!data.error) {
-                    callback(false, data.uuids[0]);
-                } else callback(data);
-            });
-        }).end();
+    connect(cb) {
+        if (!cb) cb = ()=>{};
+        let uri = url.format({
+            protocol: this.config.protocol,
+            hostname: this.config.hostname,
+            port: this.config.port,
+            pathname: '/'+encodeURIComponent(this.db)
+        });
+        request({url : uri}, (err, res, body)=>{
+            if (err) cb(err);
+            else if (res.statusCode == 200) {
+                console.log(`Conected to database successfully at ${uri.green}`);
+                cb(null);
+            }
+            else if (res.statusCode == 404) {
+                DBHandler.createDB(this.config, this.db, (err)=>{
+                    if (err) cb(err);
+                    else {
+                        console.log(`Created and conected to database successfully at ${uri.green}`);
+                        cb(null);
+                    }
+                });
+            }
+        });
+    }
+
+    getConfig(options) {
+        if (!options) options = {};
+        let config = {};
+        for (var attr in this.config) {
+            config[attr] = this.config[attr];
+        }
+        for (var attr in options) {
+            config[attr] = options[attr];
+        }
+        return config;
+    }
+
+    static getNewId(options, cb) {
+        if (arguments.length == 0) {
+            return;
+        }
+        if (arguments.length == 1) {
+            cb = options;
+            options = {};
+        }
+        let config = {
+            protocol: 'http:',
+            hostname: 'localhost',
+            port: 5984,
+            count: 1
+        };
+        for (var attr in options) {
+            config[attr] = options[attr];
+        }
+        let uri = url.format({
+            protocol : config.protocol,
+            hostname : config.hostname,
+            port : config.port,
+            pathname : '/_uuids',
+            query : {
+                count : config.count
+            }
+        });
+        request({url : uri}, (err, res, body)=>{
+            if (err) cb(err);
+            else if (res.statusCode == 200) {
+                let data = JSON.parse(body);
+                if (data.error) cb(data);
+                else cb(null, data.uuids);
+            }
+            else {
+                cb(new Error('Error occurred while connecting to couchdb.'));
+            }
+        });
     }
 
     getDoc(id, callback) {
@@ -55,10 +102,10 @@ class DBHandler {
             port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
+            res.on('data', (chunk)=>{ data+=chunk; });
+            res.on('end', ()=>{
                 data = JSON.parse(data);
                 if(!data.error) {
                     callback(false, data);
@@ -74,10 +121,10 @@ class DBHandler {
             port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/_all_docs'
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
+            res.on('data', (chunk)=>{ data+=chunk; });
+            res.on('end', ()=>{
                 data = JSON.parse(data);
                 if(!data.error) {
                     callback(false, data);
@@ -93,10 +140,10 @@ class DBHandler {
             port: this.config.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
+            res.on('data', (chunk)=>{ data+=chunk; });
+            res.on('end', ()=>{
                 data = JSON.parse(data);
                 console.log(data);
                 if (!data.error) {
@@ -115,10 +162,10 @@ class DBHandler {
             port: this.config.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
+            res.on('data', (chunk)=>{ data+=chunk; });
+            res.on('end', ()=>{
                 data = JSON.parse(data);
                 if(!data.error) {
                     callback(false, data);
@@ -134,7 +181,7 @@ class DBHandler {
         var fstream = fs.createReadStream(file.path);
         var path = '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'/'+file.name;
         var u = url.format({
-            protocol: protocol,
+            protocol: this.config.protocol,
             hostname: this.config.hostname,
             port: this.config.port,
             pathname: path,
@@ -155,10 +202,10 @@ class DBHandler {
             port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => { data+=chunk; });
-            res.on('end', () => {
+            res.on('data', (chunk)=>{ data+=chunk; });
+            res.on('end', ()=>{
                 data = JSON.parse(data);
                 if(!data.error) {
                     http.request({
@@ -166,10 +213,10 @@ class DBHandler {
                         port: this.config.port,
                         method: 'DELETE',
                         path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'?rev='+data["_rev"]
-                    }, (res) => {
+                    }, (res)=>{
                         let data = '';
-                        res.on('data', (chunk) => { data+=chunk; });
-                        res.on('end', () => {
+                        res.on('data', (chunk)=>{ data+=chunk; });
+                        res.on('end', ()=>{
                             data = JSON.parse(data);
                             if(!data.error) {
                                 callback(false);
@@ -188,12 +235,12 @@ class DBHandler {
             port: options.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(dbName)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on("data", (chunk) => {
+            res.on("data", (chunk)=>{
                 data += chunk;
             });
-            res.on("end", () => {
+            res.on("end", ()=>{
                 data = JSON.parse(data);
                 if (data.ok) callback(false);
                 else callback(data);
@@ -208,12 +255,12 @@ class DBHandler {
             port: options.port,
             method: 'DELETE',
             path: '/'+encodeURIComponent(dbName)
-        }, (res) => {
+        }, (res)=>{
             let data = '';
-            res.on('data', (chunk) => {
+            res.on('data', (chunk)=>{
                 data += chunk;
             });
-            res.on('end' ,() => {
+            res.on('end' ,()=>{
                 data=JSON.parse(data);
                 if(!data.error) callback(null);
                 else callback(data);
