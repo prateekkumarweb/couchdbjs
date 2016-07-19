@@ -202,84 +202,87 @@ class DBHandler {
         });
     }
 
+    updateDoc(id, doc, cb) {
+        if (!cb) cb = ()=>{};
+        this.getDoc(id, (err, data)=>{
+            if (err) cb(err);
+            else {
+                for (var attr in doc) {
+                    data[attr] = doc[attr];
+                }
+                let uri = url.format({
+                    protocol: this.config.protocol,
+                    hostname: this.config.hostname,
+                    port: this.config.port,
+                    pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
+                });
+                let str = new stream.Readable();
+                str.push(JSON.stringify(data));
+                str.push(null);
+                str.pipe(request.put(uri, (err, res, body)=>{
+                    if (err) cb(err);
+                    else {
+                        let data = JSON.parse(body);
+                        if (data.error) cb(data);
+                        else cb(null, data);
+                    }
+                }));
+            }
+        });
+    }
 
-    // 
-    // updateDoc(id, doc, callback) {
-    //     if (!callback) callback = console.log;
-    //     let req = http.request({
-    //         hostname: this.config.hostname,
-    //         port: this.config.port,
-    //         method: 'PUT',
-    //         path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-    //     }, (res)=>{
-    //         let data = '';
-    //         res.on('data', (chunk)=>{ data+=chunk; });
-    //         res.on('end', ()=>{
-    //             data = JSON.parse(data);
-    //             if(!data.error) {
-    //                 callback(false, data);
-    //             } else callback(data);
-    //         });
-    //     });
-    //     req.write(JSON.stringify(doc));
-    //     req.end();
-    // }
-    //
-    // attachFileInDoc(id, rev, file, callback) {
-    //     if(!callback) callback = console.log;
-    //     var fstream = fs.createReadStream(file.path);
-    //     var path = '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'/'+file.name;
-    //     var u = url.format({
-    //         protocol: this.config.protocol,
-    //         hostname: this.config.hostname,
-    //         port: this.config.port,
-    //         pathname: path,
-    //         query: {rev: rev}
-    //     });
-    //     fstream.pipe(request.put({
-    //         url: u,
-    //         headers: {
-    //             'Content-type': file.mimetype
-    //         }
-    //     }, callback));
-    // }
-    //
-    // deleteDoc(id, callback) {
-    //     if (!callback) callback = console.log;
-    //     http.request({
-    //         hostname: this.config.hostname,
-    //         port: this.config.port,
-    //         method: 'GET',
-    //         path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-    //     }, (res)=>{
-    //         let data = '';
-    //         res.on('data', (chunk)=>{ data+=chunk; });
-    //         res.on('end', ()=>{
-    //             data = JSON.parse(data);
-    //             if(!data.error) {
-    //                 http.request({
-    //                     hostname: this.config.hostname,
-    //                     port: this.config.port,
-    //                     method: 'DELETE',
-    //                     path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'?rev='+data["_rev"]
-    //                 }, (res)=>{
-    //                     let data = '';
-    //                     res.on('data', (chunk)=>{ data+=chunk; });
-    //                     res.on('end', ()=>{
-    //                         data = JSON.parse(data);
-    //                         if(!data.error) {
-    //                             callback(false);
-    //                         } else callback(data);
-    //                     });
-    //                 }).end();
-    //             } else callback(data);
-    //         });
-    //     }).end();
-    // }
-    //
-    //
+    deleteDoc(id, cb) {
+        if (!cb) cb = ()=>{};
+        this.getDoc(id, (err, data)=>{
+            if (err) cb(err);
+            else {
+                let uri = url.format({
+                    protocol: this.config.protocol,
+                    hostname: this.config.hostname,
+                    port: this.config.port,
+                    pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id),
+                    query: {
+                        rev: data['_rev']
+                    }
+                });
+                request.delete(uri, (err, res, body)=>{
+                    if (err) cb(err);
+                    else {
+                        let data = JSON.parse(body);
+                        if (data.error) cb(data);
+                        else cb(null, data);
+                    }
+                });
+            }
+        });
+    }
 
-
+    attachFileToDoc(id, rev, file, cb) {
+        if (!cb) cb = ()=>{};
+        let fstream = fs.createReadStream(file.path);
+        let uri = url.format({
+            protocol: this.config.protocol,
+            hostname: this.config.hostname,
+            port: this.config.port,
+            pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'/'+file.name,
+            query: {
+                rev: rev
+            }
+        });
+        fstream.pipe(request.put({
+            url: uri,
+            headers: {
+                'Content-type': file.mimetype
+            }
+        }, (err, res, body)=>{
+            if (err) cb(err);
+            else {
+                let data = JSON.parse(body);
+                if (data.error) cb(data);
+                else cb(null, data);
+            }
+        }));
+    }
 };
 
 module.exports = DBHandler;

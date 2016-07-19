@@ -130,3 +130,76 @@ db.getDoc('id_doc', function(err, data) {
     else console.log(data);
 });
 ```
+
+### Update a document
+```js
+db.updateDoc(id, doc, cb);
+```
+`id`, `doc`, `cb` are id of document to be updated, document object with filed to be updated and callback function with parameters `err` and `data` respectively.
+Example
+Suppose this a document already present
+```js
+{
+    'id': 'id_doc',
+    '_rev': '1-1357',
+    'a': 1,
+    'b': 'asd'
+}
+```
+If the following function is used to update the document
+```js
+db.upadteDoc('id_doc', {b: 'cs', c: 5}, function(err, data) {});
+```
+then the final document will be
+```js
+{
+    'id': 'id_doc',
+    '_rev': '2-2468',
+    'a': 1,
+    'b': 'cs',
+    'c': 5
+}
+```
+After that if the following function is used to update the document
+```js
+db.upadteDoc('id_doc', {b: 'cse', a: undefined}, function(err, data) {});
+```
+then the final document will be
+```js
+{
+    'id': 'id_doc',
+    '_rev': '3-3579',
+    'b': 'cse',
+    'c': 5
+}
+```
+To update whole document by overwriting the existing one use
+```js
+db.createDoc(id, doc, cb);
+```
+with `_rev` field in the `doc` document.
+
+### Delete a document
+```js
+db.deleteDoc(id, function(err, data) {
+    if (err) console.error(err);
+    else console.log(data);
+});
+```
+
+### Attach files to a document
+```js
+db.attachFileToDoc(id, rev, file, cb);
+```
+Example
+```js
+db.attachFileToDoc('id_doc', '3-3579', {
+    name: 'pic.jpg',
+    path: '/home/user/image.jpg'
+    mimetype: 'image/jpeg'
+}, function(err, data) {
+    if (err) console.error(err);
+    else console.log(data);
+});
+```
+Here the file gets uploaded to <http://localhost:5984/db_name/id_doc/pic.jpg>.
