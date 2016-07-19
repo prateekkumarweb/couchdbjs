@@ -4,7 +4,7 @@ const fs = require('fs');
 const request = require('request');
 const url = require('url');
 
-const protocol = "http"; // hostname = "localhost", port = 5984;
+const protocol = "http";
 
 class DBHandler {
     constructor(options, db) {
@@ -21,7 +21,7 @@ class DBHandler {
             res.on('end', () => {
                 data = JSON.parse(data);
                 if (data.error) {
-                    DBHandler.createDB(db, (error) => {
+                    DBHandler.createDB(this.config, db, (error) => {
                         if (error) throw new Error("Database Creation error");
                     });
                 }
@@ -29,11 +29,11 @@ class DBHandler {
         }).end();
     }
 
-    static getNewId(callback) {
+    static getNewId(options, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: this.config.hostname,
-            port: this.config.port,
+            hostname: options.hostname,
+            port: options.port,
             method: 'GET',
             path: '/_uuids'
         }, (res) => {
@@ -181,11 +181,11 @@ class DBHandler {
         }).end();
     }
 
-    static createDB(dbName, callback) {
+    static createDB(options, dbName, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: this.config.hostname,
-            port: this.config.port,
+            hostname: options.hostname,
+            port: options.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(dbName)
         }, (res) => {
@@ -201,11 +201,11 @@ class DBHandler {
         }).end();
     }
 
-    static deleteDB(dbName, callback) {
+    static deleteDB(options, dbName, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: this.config.hostname,
-            port: this.config.port,
+            hostname: options.hostname,
+            port: options.port,
             method: 'DELETE',
             path: '/'+encodeURIComponent(dbName)
         }, (res) => {
@@ -223,4 +223,3 @@ class DBHandler {
 };
 
 module.exports = DBHandler;
-
