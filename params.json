@@ -1,0 +1,6 @@
+{
+  "name": "Couchdbjs",
+  "tagline": "A node client for couchdb.",
+  "body": "### couchdbjs\r\nA node client for couchdb.\r\n\r\n### Tutorial\r\nView tutorial at <https://www.npmjs.com/package/couchdbjs>\r\n\r\n### Authors and Contributors\r\nPrateek Kumar (@prateekkumarweb)\r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
