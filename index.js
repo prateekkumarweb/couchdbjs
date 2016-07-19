@@ -32,8 +32,8 @@ class DBHandler {
     static getNewId(callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'GET',
             path: '/_uuids'
         }, (res) => {
@@ -51,8 +51,8 @@ class DBHandler {
     getDoc(id, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
         }, (res) => {
@@ -70,8 +70,8 @@ class DBHandler {
     getAllDocs(callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/_all_docs'
         }, (res) => {
@@ -89,8 +89,8 @@ class DBHandler {
     createDoc(id, doc, callback) {
         if (!callback) callback = console.log;
         let req = http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
         }, (res) => {
@@ -111,8 +111,8 @@ class DBHandler {
     updateDoc(id, doc, callback) {
         if (!callback) callback = console.log;
         let req = http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
         }, (res) => {
@@ -135,8 +135,8 @@ class DBHandler {
         var path = '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'/'+file.name;
         var u = url.format({
             protocol: protocol,
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             pathname: path,
             query: {rev: rev}
         });
@@ -151,8 +151,8 @@ class DBHandler {
     deleteDoc(id, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'GET',
             path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
         }, (res) => {
@@ -162,8 +162,8 @@ class DBHandler {
                 data = JSON.parse(data);
                 if(!data.error) {
                     http.request({
-                        hostname: hostname,
-                        port: port,
+                        hostname: this.config.hostname,
+                        port: this.config.port,
                         method: 'DELETE',
                         path: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'?rev='+data["_rev"]
                     }, (res) => {
@@ -184,8 +184,8 @@ class DBHandler {
     static createDB(dbName, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'PUT',
             path: '/'+encodeURIComponent(dbName)
         }, (res) => {
@@ -204,8 +204,8 @@ class DBHandler {
     static deleteDB(dbName, callback) {
         if (!callback) callback = console.log;
         http.request({
-            hostname: hostname,
-            port: port,
+            hostname: this.config.hostname,
+            port: this.config.port,
             method: 'DELETE',
             path: '/'+encodeURIComponent(dbName)
         }, (res) => {
