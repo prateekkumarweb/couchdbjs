@@ -40,7 +40,7 @@ This is the default configuration.
 }
 ```
 `cb` is reqired callback function with two parameters `err` and `data`.
-To avoid writing configurations for protocol, hostname, etc. again the function `getConfig` can be called on existing database object.
+To avoid writing configurations for protocol, hostname and port again the function `getConfig` can be called on existing database object.
 ```js
 db.getConfig({count : 1});
 ```
