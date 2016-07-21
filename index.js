@@ -154,12 +154,9 @@ class Database {
 
   createDoc(id, doc, cb) {
     if (!cb) cb = ()=>{}
-    let uri = url.format({
-      protocol : this.config.protocol,
-      hostname : this.config.hostname,
-      port : this.config.port,
+    let uri = url.format(this.getConfig({
       pathname : '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-    })
+    }))
     const str = new stream.Readable()
     str.push(JSON.stringify(doc))
     str.push(null)
@@ -175,12 +172,9 @@ class Database {
 
   getDoc(id, cb) {
     if (!cb) cb = ()=>{}
-    let uri = url.format({
-      protocol: this.config.protocol,
-      hostname : this.config.hostname,
-      port : this.config.port,
+    let uri = url.format(this.getConfig({
       pathname : '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-    })
+    }))
     request(uri, (err, res, body)=>{
       if (err) cb(err)
       else {
@@ -193,7 +187,9 @@ class Database {
 
   getAllDocs(cb) {
     if (!cb) cb = ()=>{}
-    let uri = url.format(this.getConfig({pathname: '/'+encodeURIComponent(this.db)+'/_all_docs'}))
+    let uri = url.format(this.getConfig({
+      pathname: '/'+encodeURIComponent(this.db)+'/_all_docs'
+    }))
     request(uri, (err, res, body)=>{
       if (err) cb(err)
       else {
@@ -212,12 +208,9 @@ class Database {
         for (var attr in doc) {
           data[attr] = doc[attr]
         }
-        let uri = url.format({
-          protocol: this.config.protocol,
-          hostname: this.config.hostname,
-          port: this.config.port,
+        let uri = url.format(this.getConfig({
           pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)
-        })
+        }))
         let str = new stream.Readable()
         str.push(JSON.stringify(data))
         str.push(null)
@@ -238,15 +231,12 @@ class Database {
     this.getDoc(id, (err, data)=>{
       if (err) cb(err)
       else {
-        let uri = url.format({
-          protocol: this.config.protocol,
-          hostname: this.config.hostname,
-          port: this.config.port,
+        let uri = url.format(this.getConfig({
           pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id),
           query: {
             rev: data['_rev']
           }
-        })
+        }))
         request.delete(uri, (err, res, body)=>{
           if (err) cb(err)
           else {
@@ -262,15 +252,12 @@ class Database {
   attachFileToDoc(id, rev, file, cb) {
     if (!cb) cb = ()=>{}
     let fstream = fs.createReadStream(file.path)
-    let uri = url.format({
-      protocol: this.config.protocol,
-      hostname: this.config.hostname,
-      port: this.config.port,
+    let uri = url.format(this.getConfig({
       pathname: '/'+encodeURIComponent(this.db)+'/'+encodeURIComponent(id)+'/'+file.name,
       query: {
         rev: rev
       }
-    })
+    }))
     fstream.pipe(request.put({
       url: uri,
       headers: {
