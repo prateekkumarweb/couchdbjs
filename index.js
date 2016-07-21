@@ -3,7 +3,6 @@ const http = require('http')
 const fs = require('fs')
 const request = require('request')
 const url = require('url')
-const colors = require('colors')
 const stream = require('stream')
 
 class Database {
@@ -13,14 +12,12 @@ class Database {
       hostname: 'localhost',
       port: 5984
     }
-    this.log = false;
     if (arguments.length == 2) { // To be removed in version 2.0.0
       let options = arguments[1]
       this.db = arguments[0]
       if (options.protocol) this.config.protocol = options.protocol
       if (options.hostname) this.config.hostname = options.hostname
       if (options.port) this.config.port = options.port
-      if (options.log) this.log = true
     }
     if (arguments.length == 1) {
       if (typeof arguments[0] == 'string') this.db = arguments[0] // To be removed in version 2.0.0
@@ -30,7 +27,6 @@ class Database {
         if (options.protocol) this.config.protocol = options.protocol
         if (options.hostname) this.config.hostname = options.hostname
         if (options.port) this.config.port = options.port
-        if (options.log) this.log = true
       }
     }
     this.connect()
@@ -44,14 +40,14 @@ class Database {
     request(uri, (err, res, body)=>{
       if (err) cb(err)
       else if (res.statusCode == 200) {
-        console.log(`Conected to database successfully at ${uri.green}`)
+        console.log(`Connected to database successfully at ${uri}`)
         cb(null)
       }
       else if (res.statusCode == 404) {
         Database.createDB(this.config, this.db, (err)=>{
           if (err) cb(err)
           else {
-            console.log(`Created and conected to database successfully at ${uri.green}`)
+            console.log(`Connected to database successfully at ${uri}`)
             cb(null)
           }
         })
@@ -79,7 +75,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     })
@@ -105,7 +101,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     })
@@ -150,7 +146,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data.uuids)
       }
     })
@@ -171,7 +167,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     }))
@@ -189,7 +185,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     })
@@ -202,7 +198,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     })
@@ -229,7 +225,7 @@ class Database {
           if (err) cb(err)
           else {
             let data = JSON.parse(body)
-            if (data.error) cb(data)
+            if (data.error) cb(new Error(data.reason))
             else cb(null, data)
           }
         }))
@@ -255,7 +251,7 @@ class Database {
           if (err) cb(err)
           else {
             let data = JSON.parse(body)
-            if (data.error) cb(data)
+            if (data.error) cb(new Error(data.reason))
             else cb(null, data)
           }
         })
@@ -284,7 +280,7 @@ class Database {
       if (err) cb(err)
       else {
         let data = JSON.parse(body)
-        if (data.error) cb(data)
+        if (data.error) cb(new Error(data.reason))
         else cb(null, data)
       }
     }))
