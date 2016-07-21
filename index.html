@@ -107,12 +107,14 @@ To avoid writing configurations for protocol, hostname and port again the functi
 <h3>
 <a id="create-a-new-database" class="anchor" href="#create-a-new-database" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create a new database</h3>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-k">const</span> <span class="pl-c1">db</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Couchdbjs</span>(<span class="pl-s"><span class="pl-pds">'</span>dbname<span class="pl-pds">'</span></span>, options);</pre></div>
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// not recommended</span>
+<span class="pl-k">const</span> <span class="pl-c1">db</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Couchdbjs</span>(<span class="pl-s"><span class="pl-pds">'</span>dbname<span class="pl-pds">'</span></span>, options);</pre></div>
 
 <p>This creates a database when a database with name <code>dbname</code> doesn't exist.
 Database can also be created using <code>Couchdbjs.createDB</code> function.</p>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-smi">Couchdbjs</span>.<span class="pl-en">createDB</span>({
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// recommended</span>
+<span class="pl-smi">Couchdbjs</span>.<span class="pl-en">createDB</span>({
     protocol<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>http:<span class="pl-pds">'</span></span>,
     hostname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>localhost<span class="pl-pds">'</span></span>,
     port<span class="pl-k">:</span> <span class="pl-c1">5984</span>,
