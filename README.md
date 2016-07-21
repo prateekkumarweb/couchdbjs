@@ -71,11 +71,13 @@ Couchdbjs.getNewId(db.getConfig({count : 1}, function(err, data) {
 
 ### Create a new database
 ```js
+// not recommended
 const db = new Couchdbjs('dbname', options);
 ```
 This creates a database when a database with name `dbname` doesn't exist.
 Database can also be created using `Couchdbjs.createDB` function.
 ```js
+// recommended
 Couchdbjs.createDB({
     protocol: 'http:',
     hostname: 'localhost',
