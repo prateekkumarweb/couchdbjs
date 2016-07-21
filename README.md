@@ -2,6 +2,8 @@
 
 couchdbjs is node.js client for couchdb.
 
+[![NPM](https://nodei.co/npm/couchdbjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/couchdbjs/)
+
 ### Install
 ```shell
 $ npm install couchdbjs --save
