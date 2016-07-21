@@ -44,7 +44,9 @@ class Database {
         cb(null)
       }
       else if (res.statusCode == 404) {
-        Database.createDB(this.config, this.db, (err)=>{
+        Database.createDB(this.getConfig({
+          db: this.db
+        }), (err)=>{
           if (err) cb(err)
           else {
             console.log(`Connected to database successfully at ${uri}`)

@@ -4,6 +4,12 @@ couchdbjs is node.js client for couchdb.
 
 [![NPM](https://nodei.co/npm/couchdbjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/couchdbjs/)
 
+![npm](https://img.shields.io/npm/v/couchdbjs.svg?style=flat-square)
+![npm](https://img.shields.io/npm/dm/couchdbjs.svg?style=flat-square)
+![npm](https://img.shields.io/npm/dt/couchdbjs.svg?style=flat-square)
+![npm](https://img.shields.io/npm/l/couchdbjs.svg?style=flat-square)
+![Dependencies](https://david-dm.org/prateekkumarweb/couchdbjs.svg?style=flat-square)
+
 ### Install
 ```shell
 $ npm install couchdbjs --save
