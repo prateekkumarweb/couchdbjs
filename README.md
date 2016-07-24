@@ -213,3 +213,15 @@ db.attachFileToDoc('id_doc', '3-3579', {
 });
 ```
 Here the file gets uploaded to <http://localhost:5984/db_name/id_doc/pic.jpg>.
+
+### Delete attachment from document
+```js
+db.deleteAttachment(id, rev, attachmentName, cb);
+```
+Example
+```js
+db.attachFileToDoc('id_doc', '4-1579', 'pic.jpg', function(err, data) {
+    if (err) console.error(err);
+    else console.log(data);
+});
+```
