@@ -18,7 +18,7 @@ $ npm install couchdbjs --save
 ### Create a couchdbjs object
 ```js
 const Couchdbjs = require('couchdbjs');
-const db = new Couchdbjs(dbname, options);
+const db = new Couchdbjs(dbname, options, callback);
 ```
 Note : Here DB is the object of the class couchdbjs.
 
@@ -129,7 +129,7 @@ db.createDoc('id_doc', {a:1, b:2, c:[5, 'k']}, function(err, data) {
 
 ### Get document
 ```js
-db.deleteDoc(id, cb);
+db.getDoc(id, cb);
 ```
 `id` is the id of the document.
 `cb` is the callback function with parameters `err` and `data`.
