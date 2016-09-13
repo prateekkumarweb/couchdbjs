@@ -53,7 +53,7 @@
 <a id="create-a-couchdbjs-object" class="anchor" href="#create-a-couchdbjs-object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create a couchdbjs object</h3>
 
 <div class="highlight highlight-source-js"><pre><span class="pl-k">const</span> <span class="pl-c1">Couchdbjs</span> <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>couchdbjs<span class="pl-pds">'</span></span>);
-<span class="pl-k">const</span> <span class="pl-c1">db</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Couchdbjs</span>(dbname, options);</pre></div>
+<span class="pl-k">const</span> <span class="pl-c1">db</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Couchdbjs</span>(dbname, options, callback);</pre></div>
 
 <p>Note : Here DB is the object of the class couchdbjs.</p>
 
@@ -166,7 +166,7 @@ Example</p>
 <h3>
 <a id="get-document" class="anchor" href="#get-document" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get document</h3>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-smi">db</span>.<span class="pl-en">deleteDoc</span>(id, cb);</pre></div>
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">db</span>.<span class="pl-en">getDoc</span>(id, cb);</pre></div>
 
 <p><code>id</code> is the id of the document.
 <code>cb</code> is the callback function with parameters <code>err</code> and <code>data</code>.
