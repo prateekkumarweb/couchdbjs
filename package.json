@@ -17,13 +17,13 @@
     "couch",
     "nodejs"
   ],
-  "author": "Prateek Kumar <pksingh1023@gmail.com>",
+  "author": "Prateek Kumar <prateek@prateekkumar.in>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/prateekkumarweb/couchdbjs/issues"
   },
   "homepage": "https://github.com/prateekkumarweb/couchdbjs#readme",
   "dependencies": {
-    "request": "^2.73.0"
+    "request": "^2.76.0"
   }
 }
