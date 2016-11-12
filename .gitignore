@@ -38,3 +38,8 @@ jspm_packages
 
 # Custom
 .idea
+
+# Read the docs
+_build
+_static
+_templates
